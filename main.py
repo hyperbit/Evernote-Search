@@ -10,19 +10,19 @@ class Note:
         self.guid = self.getData(xmlDom.getElementsByTagName('guid')[0].childNodes)
         created = self.getData(xmlDom.getElementsByTagName('created')[0].childNodes)
         self.created = datetime.datetime.strptime(created, '%Y-%m-%dT%H:%M:%SZ')
+        self.tags = []
         if xmlDom.getElementsByTagName('tag'):
-            self.tags = self.getData(xmlDom.getElementsByTagName('tag')[0].childNodes, True)
+            for tag in xmlDom.getElementsByTagName('tag'):
+                self.tags.append(self.getData(tag.childNodes))
         else:
             self.tags = []
         self.content = self.getData(xmlDom.getElementsByTagName('content')[0].childNodes)
 
-    def getData(self, nodelist, tags=False):
+    def getData(self, nodelist):
         rc = []
         for node in nodelist:
             #if node.nodeType == node.TEXT_NODE:
             rc.append(node.data)
-        if tags:
-            return rc
         return ''.join(rc)
 
     def printNote(self):
