@@ -3,7 +3,7 @@ import xml.dom.minidom
 import datetime
 import re
 
-searchableNotes = {}
+searchableNotes = []
 
 class Note:
     def __init__(self, xmlDom):
@@ -47,18 +47,18 @@ def createXML():
 def create():
     dom = createXML()
     note = Note(dom)
-    searchableNotes[note.guid] = note
+    searchableNotes.append(note)
     #note.printNote()
     #print
 
 def update():
     dom = createXML()
     note = Note(dom)
-    if note.note['guid'] not in searchableNotes:
-        print "Note not found"
-        return -1
-    else:
-        searchableNotes[note.note['guid']] = note
+    #if note.note['guid'] not in searchableNotes:
+    #    print "Note not found"
+    #    return -1
+    #else:
+    #    searchableNotes[note.note['guid']] = note
 
 def delete(key):
     del searchableNotes[key]
@@ -67,10 +67,10 @@ def search(query):
     queries = query.split(' ')
     results = []
     for q in queries:
-        for guid in searchableNotes.keys():
+        for note in searchableNotes:
             #parseQuery(q)
-            if re.search(q, searchableNotes[guid].content, re.IGNORECASE):
-                results.append(guid)
+            if re.search(q, note.content, re.IGNORECASE):
+                results.append(note.guid)
     return results
 
 def parseQuery(query):
