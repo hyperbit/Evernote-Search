@@ -5,11 +5,10 @@ searchableNotes = {}
 
 class Note:
     def __init__(self, xmlDom):
-        self.note = {}
-        self.note['guid'] = self.getData(xmlDom.getElementsByTagName('guid')[0].childNodes)
-        self.note['created'] = self.getData(xmlDom.getElementsByTagName('created')[0].childNodes)
-        self.note['tags'] = self.getData(xmlDom.getElementsByTagName('tag')[0].childNodes, True)
-        self.note['content'] = self.getData(xmlDom.getElementsByTagName('content')[0].childNodes)
+        self.guid = self.getData(xmlDom.getElementsByTagName('guid')[0].childNodes)
+        self.created = self.getData(xmlDom.getElementsByTagName('created')[0].childNodes)
+        self.tags = self.getData(xmlDom.getElementsByTagName('tag')[0].childNodes, True)
+        self.content = self.getData(xmlDom.getElementsByTagName('content')[0].childNodes)
 
     def getData(self, nodelist, tags=False):
         rc = []
@@ -22,8 +21,16 @@ class Note:
         
 
     def printNote(self):
-        for key in self.note.keys():
-            print key, self.note[key]
+        print "guid:", self.guid
+        print "created at:", self.created
+        if len(self.tags) > 0:
+            print "tags:",
+            for tag in self.tags:
+                print tag,
+            print
+        print "content:"
+        print self.content
+        print
 
 
 def createXML():
@@ -37,8 +44,9 @@ def createXML():
 def create():
     dom = createXML()
     note = Note(dom)
-    searchableNotes[note.note['guid']] = note
+    searchableNotes[note.guid] = note
     note.printNote()
+    print
 
 def update():
     dom = createXML()
@@ -49,6 +57,8 @@ def update():
     else:
         searchableNotes[note.note['guid']] = note
 
+def delete(key):
+    del searchableNotes[key]
 
 
 def main():
@@ -59,6 +69,9 @@ def main():
                 create()
             elif line == "UPDATE":
                 update()
+            elif line == "DELETE":
+                key = raw_input()
+                delete(key)
         except(EOFError):
             return
 
