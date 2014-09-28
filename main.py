@@ -10,7 +10,10 @@ class Note:
         self.guid = self.getData(xmlDom.getElementsByTagName('guid')[0].childNodes)
         created = self.getData(xmlDom.getElementsByTagName('created')[0].childNodes)
         self.created = datetime.datetime.strptime(created, '%Y-%m-%dT%H:%M:%SZ')
-        self.tags = self.getData(xmlDom.getElementsByTagName('tag')[0].childNodes, True)
+        if xmlDom.getElementsByTagName('tag'):
+            self.tags = self.getData(xmlDom.getElementsByTagName('tag')[0].childNodes, True)
+        else:
+            self.tags = []
         self.content = self.getData(xmlDom.getElementsByTagName('content')[0].childNodes)
 
     def getData(self, nodelist, tags=False):
@@ -40,6 +43,7 @@ def createXML():
     xmlDom = ''
     while line != "</note>":
         line = raw_input()
+        line = line.replace('&', '&amp;')
         xmlDom += line
     return xml.dom.minidom.parseString(xmlDom)
 
@@ -47,20 +51,20 @@ def create():
     dom = createXML()
     note = Note(dom)
     searchableNotes.append(note)
-    #note.printNote()
-    #print
 
 def update():
     dom = createXML()
     note = Note(dom)
-    #if note.note['guid'] not in searchableNotes:
-    #    print "Note not found"
-    #    return -1
-    #else:
-    #    searchableNotes[note.note['guid']] = note
+    for index, n in enumerate(searchableNotes):
+        if n.guid == note.guid:
+            del searchableNotes[index]
+            break
+    searchableNotes.append(note)
 
 def delete(key):
-    del searchableNotes[key]
+    for index, n in enumerate(searchableNotes):
+        if n.guid == key:
+            del searchableNotes[index]
 
 def search(query):
     queries = query.split(' ')
@@ -71,9 +75,10 @@ def search(query):
             regex = compileRegex(q)
             queriesFound[q] = False
             if "tag:" in q:
-                for tag in note.tags:
-                    if re.search(regex, tag):
-                        queriesFound[q] = True
+                if len(note.tags) > 0:
+                    for tag in note.tags:
+                        if re.search(regex, tag):
+                            queriesFound[q] = True
             elif "created:" in q:
                 date = regex
                 if note.created >= date:
@@ -115,6 +120,8 @@ def main():
                 results = search(query)
                 if len(results) > 0:
                     print ','.join(results)
+                else:
+                    print
             searchableNotes.sort(key=lambda note: note.created)
         except(EOFError):
             return
