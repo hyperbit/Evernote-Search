@@ -1,5 +1,6 @@
 # Enter your code here. Read input from STDIN. Print output to STDOUT
 import xml.dom.minidom
+import datetime
 import re
 
 searchableNotes = {}
@@ -7,7 +8,8 @@ searchableNotes = {}
 class Note:
     def __init__(self, xmlDom):
         self.guid = self.getData(xmlDom.getElementsByTagName('guid')[0].childNodes)
-        self.created = self.getData(xmlDom.getElementsByTagName('created')[0].childNodes)
+        created = self.getData(xmlDom.getElementsByTagName('created')[0].childNodes)
+        self.created = datetime.datetime.strptime(created, '%Y-%m-%dT%H:%M:%SZ')
         self.tags = self.getData(xmlDom.getElementsByTagName('tag')[0].childNodes, True)
         self.content = self.getData(xmlDom.getElementsByTagName('content')[0].childNodes)
 
