@@ -92,6 +92,7 @@ def main():
                 results = search(query)
                 if len(results) > 0:
                     print ','.join(results)
+            searchableNotes.sort(key=lambda note: note.created)
         except(EOFError):
             return
 
