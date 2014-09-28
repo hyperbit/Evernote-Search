@@ -21,7 +21,6 @@ class Note:
         if tags:
             return rc
         return ''.join(rc)
-        
 
     def printNote(self):
         print "guid:", self.guid
@@ -65,30 +64,24 @@ def delete(key):
 
 def search(query):
     queries = query.split(' ')
-    print queries
     results = []
     for note in searchableNotes:
-        addNode = False
+        queriesFound = {}
         for q in queries:
             regex = compileRegex(q)
+            queriesFound[q] = False
             if "tag:" in q:
                 for tag in note.tags:
                     if re.search(regex, tag):
-                        addNote = True
-                    else:
-                        addNote = False
+                        queriesFound[q] = True
             elif "created:" in q:
                 date = regex
                 if note.created >= date:
-                    addNote = True
-                else:
-                    addNote = False
+                    queriesFound[q] = True
             else:
                 if re.search(regex, note.content):
-                    addNote = True
-                else:
-                    addNote = False
-        if addNote:
+                    queriesFound[q] = True
+        if all(val==True for val in queriesFound.values()):
             results.append(note.guid)
     return results
 
