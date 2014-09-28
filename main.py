@@ -66,15 +66,20 @@ def delete(key):
 def search(query):
     queries = query.split(' ')
     results = []
-    for q in queries:
-        for note in searchableNotes:
-            #parseQuery(q)
-            if re.search(q, note.content, re.IGNORECASE):
-                results.append(note.guid)
+    for note in searchableNotes:
+        addNode = False
+        for q in queries:
+            regex = compileRegex(q)
+            if re.search(regex, note.content):
+                addNote = True
+            else:
+                addNote = False
+        if addNote:
+            results.append(note.guid)
     return results
 
-def parseQuery(query):
-    return None
+def compileRegex(query):
+    return re.compile(r'\b%s\b' % query, re.IGNORECASE)
 
 def main():
     while True:
