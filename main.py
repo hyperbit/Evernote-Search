@@ -1,5 +1,6 @@
 # Enter your code here. Read input from STDIN. Print output to STDOUT
 import xml.dom.minidom
+import re
 
 searchableNotes = {}
 
@@ -45,8 +46,8 @@ def create():
     dom = createXML()
     note = Note(dom)
     searchableNotes[note.guid] = note
-    note.printNote()
-    print
+    #note.printNote()
+    #print
 
 def update():
     dom = createXML()
@@ -60,6 +61,12 @@ def update():
 def delete(key):
     del searchableNotes[key]
 
+def search(query):
+    results = []
+    for guid in searchableNotes.keys():
+        if re.search(query, searchableNotes[guid].content, re.IGNORECASE):
+            results.append(guid)
+    return results
 
 def main():
     while True:
@@ -72,6 +79,11 @@ def main():
             elif line == "DELETE":
                 key = raw_input()
                 delete(key)
+            elif line == "SEARCH":
+                query = raw_input()
+                results = search(query)
+                if len(results) > 0:
+                    print ','.join(results)
         except(EOFError):
             return
 
