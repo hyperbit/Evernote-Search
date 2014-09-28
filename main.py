@@ -62,11 +62,17 @@ def delete(key):
     del searchableNotes[key]
 
 def search(query):
+    queries = query.split(' ')
     results = []
-    for guid in searchableNotes.keys():
-        if re.search(query, searchableNotes[guid].content, re.IGNORECASE):
-            results.append(guid)
+    for q in queries:
+        for guid in searchableNotes.keys():
+            #parseQuery(q)
+            if re.search(q, searchableNotes[guid].content, re.IGNORECASE):
+                results.append(guid)
     return results
+
+def parseQuery(query):
+    return None
 
 def main():
     while True:
