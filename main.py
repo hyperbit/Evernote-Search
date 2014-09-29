@@ -14,8 +14,6 @@ class Note:
         if xmlDom.getElementsByTagName('tag'):
             for tag in xmlDom.getElementsByTagName('tag'):
                 self.tags.append(self.getData(tag.childNodes))
-        else:
-            self.tags = []
         self.content = self.getData(xmlDom.getElementsByTagName('content')[0].childNodes)
 
     def getData(self, nodelist):
@@ -57,14 +55,14 @@ def update():
     note = Note(dom)
     for index, n in enumerate(searchableNotes):
         if n.guid == note.guid:
-            del searchableNotes[index]
+            searchableNotes[index] = note
             break
-    searchableNotes.append(note)
 
 def delete(key):
     for index, n in enumerate(searchableNotes):
         if n.guid == key:
             del searchableNotes[index]
+            break
 
 def search(query):
     queries = query.split(' ')
@@ -92,12 +90,12 @@ def search(query):
 
 def compileRegex(query):
     if "created:" not in query:
-        if "tag:" in query:
+        if 'tag:' in query:
             r = ''.join(filter(None,query.split('tag:')))
         else:
             r = query
-        if "*" in r:
-            r = r.replace("*", ".*")
+        if '*' in r:
+            r = r.replace('*', '.*')
         regex = re.compile(r'\b%s\b' % r, re.IGNORECASE)
     else:
         date = ''.join(filter(None,query.split('created:')))
