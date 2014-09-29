@@ -90,7 +90,7 @@ def search(query):
                 if note.created >= date:
                     queriesFound[q] = True
 
-            elif '&' in q and q in note.content:
+            elif q in string.punctuation and q in note.content:
                 queriesFound[q] = True
             else:
                 if re.search(regex, note.content):
@@ -107,13 +107,18 @@ def compileRegex(query):
             r = query
         if len(r) == 0:
             return ''
-        if r != '*' and '*' in r:
+        if r == '*':
+            r = r.replace('*', '[*]')
+        elif '*' in r:
             r = r.replace('*', '.*')
-        # Handle regex reserved symbols
-        for char in string.punctuation:
-            if char in r and char != '*':
-                r.replace(char, '[%s]' % char)
-        regex = re.compile(r'\b%s\b' % r, re.IGNORECASE)
+        if "'" == r[0] and "'" == r[len(r)-1]:
+            regex = re.compile(r'%s' % r, re.IGNORECASE)
+        elif "'" == r[0]:
+            regex = re.compile(r'%s\b' % r, re.IGNORECASE)
+        elif "'" == r[len(r)-1]:
+            regex = re.compile(r'\b%s' % r, re.IGNORECASE)
+        else:
+            regex = re.compile(r'\b%s\b' % r, re.IGNORECASE)
     else:
         date = ''.join(filter(None,query.split('created:')))
         regex = datetime.datetime.strptime(date, '%Y%m%d')
