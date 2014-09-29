@@ -72,6 +72,8 @@ def search(query):
         for q in queries:
             regex = compileRegex(q)
             queriesFound[q] = False
+            if '&' in q and q in note.content:
+                queriesFound[q] = True
             if "tag:" in q:
                 if len(note.tags) > 0:
                     for tag in note.tags:
