@@ -2,6 +2,7 @@
 import xml.dom.minidom
 import datetime
 import re
+import string
 
 searchableNotes = []
 
@@ -75,6 +76,9 @@ def search(query):
         queriesFound = {}
         for q in queries:
             regex = compileRegex(q)
+            # Test for empty input
+            if regex == '':
+                return []
             queriesFound[q] = False
             if "tag:" in q:
                 if len(note.tags) > 0:
@@ -101,11 +105,14 @@ def compileRegex(query):
             r = ''.join(filter(None,query.split('tag:')))
         else:
             r = query
+        if len(r) == 0:
+            return ''
         if r != '*' and '*' in r:
             r = r.replace('*', '.*')
         # Handle regex reserved symbols
-        if '+' in r:
-            r = r.replace('+', '[+]')
+        for char in string.punctuation:
+            if char in r and char != '*':
+                r.replace(char, '[%s]' % char)
         regex = re.compile(r'\b%s\b' % r, re.IGNORECASE)
     else:
         date = ''.join(filter(None,query.split('created:')))
