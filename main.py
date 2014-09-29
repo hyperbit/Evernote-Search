@@ -72,8 +72,6 @@ def search(query):
         for q in queries:
             regex = compileRegex(q)
             queriesFound[q] = False
-            if '&' in q and q in note.content:
-                queriesFound[q] = True
             if "tag:" in q:
                 if len(note.tags) > 0:
                     for tag in note.tags:
@@ -83,6 +81,9 @@ def search(query):
                 date = regex
                 if note.created >= date:
                     queriesFound[q] = True
+
+            elif '&' in q and q in note.content:
+                queriesFound[q] = True
             else:
                 if re.search(regex, note.content):
                     queriesFound[q] = True
@@ -96,8 +97,11 @@ def compileRegex(query):
             r = ''.join(filter(None,query.split('tag:')))
         else:
             r = query
-        if '*' in r:
+        if r != '*' and '*' in r:
             r = r.replace('*', '.*')
+        # Handle regex reserved symbols
+        if '+' in r:
+            r = r.replace('+', '[+]')
         regex = re.compile(r'\b%s\b' % r, re.IGNORECASE)
     else:
         date = ''.join(filter(None,query.split('created:')))
