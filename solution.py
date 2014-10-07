@@ -22,10 +22,6 @@ class Note:
         for node in nodelist:
             if node.nodeType == node.TEXT_NODE:
                 rc.append(node.data)
-            else:
-                rc.append('<%s>' % node.nodeName)
-                rc.append(self.getData(node.childNodes))
-                rc.append('</%s>' % node.nodeName)
         return ''.join(rc)
 
     def printNote(self):
